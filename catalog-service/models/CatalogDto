@@ -1,0 +1,13 @@
+title: CatalogDto
+x-stoplight:
+  id: krp73wwsisyns
+type: object
+properties:
+  id:
+    type: string
+  productName:
+    type: string
+  productPrice:
+    type: integer
+  mainCategory:
+    $ref: ./MainProductDto.yaml

@@ -1,0 +1,9 @@
+title: MainCategoryDto
+x-stoplight:
+  id: lfp74f2dgl40v
+type: object
+properties:
+  id:
+    type: string
+  mainCategory:
+    type: string

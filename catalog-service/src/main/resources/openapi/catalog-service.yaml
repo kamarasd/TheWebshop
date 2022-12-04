@@ -1,0 +1,233 @@
+openapi: 3.0.1
+x-stoplight:
+  id: 305dtkh5rag7g
+info:
+  title: catalog-service
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8080'
+paths:
+  /api/catalog/:
+    get:
+      summary: getCatalogItems
+      tags:
+        - catalog-controller
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CatalogDto'
+      operationId: getCatalogItems
+  /api/catalog/new:
+    post:
+      summary: addNewItemToCatalog
+      operationId: addNewItemToCatalog
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogDto'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogDto'
+      tags:
+        - catalog-controller
+  '/api/catalog/delete/{id}':
+    parameters:
+      - schema:
+          type: integer
+          format: int64
+        name: id
+        in: path
+        required: true
+    delete:
+      summary: deleteItemFromCatalog
+      operationId: deleteItemFromCatalog
+      responses:
+        '200':
+          description: OK
+      description: ''
+      tags:
+        - catalog-controller
+  '/api/catalog/{id}':
+    parameters:
+      - schema:
+          type: integer
+          format: int64
+        name: id
+        in: path
+        required: true
+    put:
+      summary: ''
+      operationId: modifyItemById
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogDto'
+      tags:
+        - catalog-controller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogDto'
+  /api/category/:
+    get:
+      summary: getAllCategory
+      tags:
+        - category-controller
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryDto'
+      operationId: getAllCategory
+  /api/category/new:
+    post:
+      summary: addNewCategory
+      operationId: addNewCategory
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryDto'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryDto'
+      tags:
+        - category-controller
+  /api/catalog/searchCategory:
+    get:
+      summary: searchCategory
+      tags:
+        - catalog-controller
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CatalogDto'
+      operationId: searchCategory
+      description: ''
+      parameters:
+        - schema:
+            type: boolean
+          in: query
+          name: all
+        - schema:
+            type: string
+          in: query
+          name: page
+        - schema:
+            type: string
+          in: query
+          name: size
+        - schema:
+            type: string
+          in: query
+          name: sort
+  /api/catalog/history:
+    get:
+      summary: getCatalogHistory
+      tags:
+        - catalog-controller
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistoryDataDto'
+      operationId: getCatalogHistory
+      parameters:
+        - schema:
+            type: integer
+            format: int64
+          in: header
+          name: id
+          required: true
+components:
+  schemas:
+    CatalogDto:
+      title: CatalogDto
+      x-stoplight:
+        id: i101r6q3gdyl5
+      type: object
+      x-examples:
+        example-1:
+          id: -9223372036854776000
+          productName: string
+          productPrice: 0
+          category:
+            id: 0
+            categoryName: string
+      properties:
+        id:
+          type: integer
+          format: int64
+        productName:
+          type: string
+        productPrice:
+          type: integer
+        category:
+          $ref: '#/components/schemas/CategoryDto'
+    CategoryDto:
+      title: CategoryDto
+      x-stoplight:
+        id: jx48z3wkedk6l
+      type: object
+      x-examples:
+        example-1:
+          - null
+        example-2:
+          id: -9223372036854776000
+          categoryName: string
+          catalogs:
+            - id: 0
+              productName: string
+              productPrice: 0
+      properties:
+        id:
+          type: integer
+          format: int64
+        categoryName:
+          type: string
+    HistoryDataDto:
+      title: HistoryDataDto
+      x-stoplight:
+        id: pwgu7ezjhf9st
+      type: object
+      properties:
+        revType:
+          type: string
+        revision:
+          type: integer
+        revDate:
+          type: string
+          format: date
+        data:
+          $ref: '#/components/schemas/CatalogDto'
