@@ -148,7 +148,7 @@ paths:
             type: string
           in: query
           name: sort
-  /api/catalog/history:
+  '/api/catalog/history/{id}':
     get:
       summary: getCatalogHistory
       tags:
@@ -163,13 +163,14 @@ paths:
                 items:
                   $ref: '#/components/schemas/HistoryDataDto'
       operationId: getCatalogHistory
-      parameters:
-        - schema:
-            type: integer
-            format: int64
-          in: header
-          name: id
-          required: true
+      parameters: []
+    parameters:
+      - schema:
+          type: integer
+          format: int64
+        name: id
+        in: path
+        required: true
 components:
   schemas:
     CatalogDto:

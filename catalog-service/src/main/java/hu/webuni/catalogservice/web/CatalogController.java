@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,8 +72,20 @@ public class CatalogController implements CatalogControllerApi {
 
     @Override
     public ResponseEntity<List<HistoryDataDto>> getCatalogHistory(Long id) {
-        catalogRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         List<HistoryData<Catalog>> catalogHistory = catalogService.getCatalogHistory(id);
+        List<HistoryData<CatalogDto>> catalogWithHistory = new ArrayList<>();
+
+        catalogHistory.forEach(historyData -> {
+            catalogWithHistory.add(new HistoryData<>(
+                    catalogMapper.catalogToDto(historyData.getData()),
+                    historyData.getRevType(),
+                    historyData.getRevision(),
+                    historyData.getRevDate()
+            ));
+        });
+
         return ResponseEntity.ok(catalogMapper.catalogHistoryToHistoryDto(catalogHistory));
     }
+
+
 }

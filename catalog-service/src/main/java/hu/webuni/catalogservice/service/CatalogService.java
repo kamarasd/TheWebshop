@@ -29,12 +29,12 @@ public class CatalogService {
     public List<HistoryData<Catalog>> getCatalogHistory(Long id) {
         List resultList = AuditReaderFactory
                 .get(manager).createQuery()
-                .forRevisionsOfEntity(Catalog.class, true, true)
+                .forRevisionsOfEntity(Catalog.class, false, true)
                 .add(AuditEntity.property("id").eq(id))
                 .getResultList()
                 .stream()
                     .map(obj -> {
-                        Object[] objArray = (Object[]) obj;
+                        Object[] objArray = (Object[])obj;
                         DefaultRevisionEntity revEnt = (DefaultRevisionEntity)objArray[1];
                             return new HistoryData<Catalog>(
                                     (Catalog)objArray[0],
