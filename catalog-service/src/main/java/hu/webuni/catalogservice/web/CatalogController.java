@@ -1,23 +1,37 @@
 package hu.webuni.catalogservice.web;
 
 
+import com.querydsl.core.Query;
+import com.querydsl.core.types.Predicate;
 import hu.webuni.catalogservice.api.CatalogControllerApi;
 import hu.webuni.catalogservice.api.model.CatalogDto;
 import hu.webuni.catalogservice.api.model.HistoryDataDto;
+import hu.webuni.catalogservice.api.model.PriceHistoryDto;
 import hu.webuni.catalogservice.mapper.CatalogMapper;
 import hu.webuni.catalogservice.model.Catalog;
 import hu.webuni.catalogservice.model.HistoryData;
+import hu.webuni.catalogservice.model.PriceHistory;
 import hu.webuni.catalogservice.repository.CatalogRepository;
 import hu.webuni.catalogservice.service.CatalogService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.MethodParameter;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.data.web.SortDefault;
+import org.springframework.data.web.querydsl.QuerydslPredicateArgumentResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.lang.reflect.Method;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,8 +43,10 @@ public class CatalogController implements CatalogControllerApi {
     private final CatalogRepository catalogRepository;
     private final CatalogMapper catalogMapper;
     private final NativeWebRequest nativeWebRequest;
-
     private final CatalogService catalogService;
+    private final PageableHandlerMethodArgumentResolver pageResolver;
+
+
 
     @Override
     public Optional<NativeWebRequest> getRequest() {
@@ -66,11 +82,6 @@ public class CatalogController implements CatalogControllerApi {
     }
 
     @Override
-    public ResponseEntity<List<CatalogDto>> searchCategory(Boolean all, String page, String size, String sort) {
-        return CatalogControllerApi.super.searchCategory(all, page, size, sort);
-    }
-
-    @Override
     public ResponseEntity<List<HistoryDataDto>> getCatalogHistory(Long id) {
         List<HistoryData<Catalog>> catalogHistory = catalogService.getCatalogHistory(id);
         List<HistoryData<CatalogDto>> catalogWithHistory = new ArrayList<>();
@@ -85,6 +96,20 @@ public class CatalogController implements CatalogControllerApi {
         });
 
         return ResponseEntity.ok(catalogMapper.catalogHistoryToHistoryDto(catalogHistory));
+    }
+
+    @Override
+    public ResponseEntity<List<PriceHistoryDto>> gePriceHistoryFromCatalog(Long id) {
+        List<PriceHistory> priceHistory = catalogService.getPriceHistoryForItem(id);
+        return ResponseEntity.ok(catalogMapper.catalogPriceHistoryToPriceHistoryDto(priceHistory));
+    }
+
+    @Override
+    public ResponseEntity<List<CatalogDto>> getCatalogWithCriteria(Long id, String productName, List<String> productPrice, String categoryCategoryName) {
+
+        Predicate predicate = catalogService.createPredicate("configurePredicate");
+
+        return ResponseEntity.ok(catalogMapper.catalogsToDtos(catalogRepository.findAll(predicate)));
     }
 
 

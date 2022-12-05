@@ -115,39 +115,6 @@ paths:
               $ref: '#/components/schemas/CategoryDto'
       tags:
         - category-controller
-  /api/catalog/searchCategory:
-    get:
-      summary: searchCategory
-      tags:
-        - catalog-controller
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CatalogDto'
-      operationId: searchCategory
-      description: ''
-      parameters:
-        - schema:
-            type: boolean
-          in: query
-          name: all
-        - schema:
-            type: string
-          in: query
-          name: page
-        - schema:
-            type: string
-          in: query
-          name: size
-        - schema:
-            type: string
-          in: query
-          name: sort
   '/api/catalog/history/{id}':
     get:
       summary: getCatalogHistory
@@ -171,6 +138,63 @@ paths:
         name: id
         in: path
         required: true
+  '/api/catalog/priceHistory/{id}':
+    parameters:
+      - schema:
+          type: integer
+          format: int64
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags:
+        - catalog-controller
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PriceHistoryDto'
+      operationId: gePriceHistoryFromCatalog
+  /api/catalog/catalogSearch:
+    get:
+      summary: getCatalogWithCriteria
+      tags:
+        - catalog-controller
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CatalogDto'
+      operationId: getCatalogWithCriteria
+      parameters:
+        - schema:
+            type: integer
+            format: int64
+          in: query
+          name: id
+        - schema:
+            type: string
+          in: query
+          name: productName
+        - schema:
+            type: array
+            items:
+              type: string
+          in: query
+          name: productPrice
+        - schema:
+            type: string
+          in: query
+          name: category.categoryName
 components:
   schemas:
     CatalogDto:
@@ -232,3 +256,14 @@ components:
           format: date
         data:
           $ref: '#/components/schemas/CatalogDto'
+    PriceHistoryDto:
+      title: PriceHistoryDto
+      x-stoplight:
+        id: 1g7zc2y8ufaq8
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        price:
+          type: integer

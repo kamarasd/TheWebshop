@@ -2,8 +2,10 @@ package hu.webuni.catalogservice.mapper;
 
 import hu.webuni.catalogservice.api.model.CatalogDto;
 import hu.webuni.catalogservice.api.model.HistoryDataDto;
+import hu.webuni.catalogservice.api.model.PriceHistoryDto;
 import hu.webuni.catalogservice.model.Catalog;
 import hu.webuni.catalogservice.model.HistoryData;
+import hu.webuni.catalogservice.model.PriceHistory;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -27,4 +29,6 @@ public interface CatalogMapper {
     List<CatalogDto> catalogSummariesToDto(Iterable<Catalog> findAll);
 
     List<HistoryDataDto> catalogHistoryToHistoryDto(List<HistoryData<Catalog>> historyData);
+
+    List<PriceHistoryDto> catalogPriceHistoryToPriceHistoryDto(List<PriceHistory> priceHistories);
 }
