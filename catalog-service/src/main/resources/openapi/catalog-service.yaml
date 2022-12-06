@@ -22,6 +22,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/CatalogDto'
       operationId: getCatalogItems
+      parameters: []
   /api/catalog/new:
     post:
       summary: addNewItemToCatalog
@@ -195,6 +196,20 @@ paths:
             type: string
           in: query
           name: category.categoryName
+        - schema:
+            type: integer
+          in: query
+          name: page
+        - schema:
+            type: integer
+          in: query
+          name: size
+        - schema:
+            type: array
+            items:
+              type: string
+          in: query
+          name: sort
 components:
   schemas:
     CatalogDto:

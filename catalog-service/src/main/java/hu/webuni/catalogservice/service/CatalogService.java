@@ -16,6 +16,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.SortDefault;
 import org.springframework.data.web.querydsl.QuerydslPredicateArgumentResolver;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ public class CatalogService {
 
     private final CatalogRepository catalogRepository;
     private final QuerydslPredicateArgumentResolver querydslPredicateArgumentResolver;
+    private final PageableHandlerMethodArgumentResolver pageableHandlerMethodArgumentResolver;
     private final NativeWebRequest nativeWebRequest;
 
     @PersistenceContext
@@ -97,6 +99,22 @@ public class CatalogService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+    }
+
+    public Pageable createPageable(String configMethodName) {
+        try {
+            Method method = this.getClass().getMethod(configMethodName, Pageable.class);
+            MethodParameter methodParameter = new MethodParameter(method, 0);
+            ModelAndViewContainer modelAndViewContainer = null;
+            WebDataBinderFactory webDataBinderFactory = null;
+            Pageable pageable = pageableHandlerMethodArgumentResolver.resolveArgument(methodParameter, modelAndViewContainer, nativeWebRequest, webDataBinderFactory);
+            return pageable;
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
 
     }
 

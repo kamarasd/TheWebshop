@@ -105,12 +105,12 @@ public class CatalogController implements CatalogControllerApi {
     }
 
     @Override
-    public ResponseEntity<List<CatalogDto>> getCatalogWithCriteria(Long id, String productName, List<String> productPrice, String categoryCategoryName) {
+    public ResponseEntity<List<CatalogDto>> getCatalogWithCriteria(Long id, String productName, List<String> productPrice, String categoryCategoryName, Integer page, Integer size, List<String> sort) {
 
         Predicate predicate = catalogService.createPredicate("configurePredicate");
+        Pageable pageable = catalogService.createPageable("confPageable");
 
-        return ResponseEntity.ok(catalogMapper.catalogsToDtos(catalogRepository.findAll(predicate)));
+        return ResponseEntity.ok(catalogMapper.catalogsToDtos(catalogRepository.findAll(predicate, pageable)));
     }
-
 
 }
