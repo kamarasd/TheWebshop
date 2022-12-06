@@ -11,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootApplication
 @Slf4j
 public class ShippingServiceApplication implements CommandLineRunner {
-
-	private Random rand = new Random();
 	
     public static void main(String[] args) {
 

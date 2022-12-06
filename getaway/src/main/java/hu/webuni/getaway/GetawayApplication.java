@@ -1,19 +1,21 @@
-package hu.webuni.orderservice;
+package hu.webuni.getaway;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
-public class OrderServiceApplication implements CommandLineRunner {
+@EnableDiscoveryClient
+public class GetawayApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
 
-        SpringApplication.run(OrderServiceApplication.class, args);
+        SpringApplication.run(GetawayApplication.class, args);
     }
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("order-service are up and running");
+        System.out.println("Gateway client are up and running");
     }
 }

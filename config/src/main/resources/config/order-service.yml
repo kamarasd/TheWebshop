@@ -1,0 +1,17 @@
+server:
+  port: 8082
+  error:
+    include-message: always
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/webuni-webshop
+    username: postgres
+    password: postgres
+  flyway:
+    baseline-on-migrate: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8084/eureka/
