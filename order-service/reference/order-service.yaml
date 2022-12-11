@@ -1,0 +1,44 @@
+openapi: 3.0.0
+x-stoplight:
+  id: dz50k86a1uyxv
+info:
+  title: order-service
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /api/address:
+    get:
+      summary: getAllAddress
+      tags:
+        - address-controller
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressDto'
+      operationId: getAllAddress
+      x-extension-1: null
+components:
+  schemas:
+    AddressDto:
+      title: AddressDto
+      x-stoplight:
+        id: vorc7lk84et4s
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        zipCode:
+          type: string
+        street:
+          type: string
+        houseNo:
+          type: string
+        cityName:
+          type: string

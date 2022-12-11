@@ -1,5 +1,5 @@
 server:
-  port: 8089
+  port: 8087
 
 eureka:
   client:
@@ -10,21 +10,15 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: catalog-service
-          uri: lb://catalog
-          predicates:
-            - Path=/catalog/**
-          filters:
-            - RewritePath=/catalog(?<segment>/?.*), /api$\{segment}
-        - id: order
-            uri: lb://order
-            predicates:
-              - Path=/order/**
-            filters:
-              - RewritePath=/order(?<segment>/?.*), /api$\{segment}
-        - id: user
-            uri: lb://user
-            predicates:
-              - Path=/user/**
-            filters:
-              - RewritePath=/user(?<segment>/?.*), /api$\{segment}
+      - id: catalog
+        uri: lb://catalog
+        predicates:
+        - Path=/catalog/**
+        filters:
+        - RewritePath=/catalog(?<segment>/?.*), /api/catalog$\{segment}
+      - id: orders
+        uri: lb://order
+        predicates:
+        - Path=/order/**
+        filters:
+        - RewritePath=/order(?<segment>/?.*), /api/order$\{segment}

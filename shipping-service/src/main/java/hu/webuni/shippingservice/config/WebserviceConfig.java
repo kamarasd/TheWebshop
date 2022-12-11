@@ -20,7 +20,6 @@ public class WebserviceConfig {
 	public Endpoint endpoint() {
 		EndpointImpl endpoint = new EndpointImpl(bus, systemXmlWs);
 		endpoint.publish("/shipmentService");
-		
 		return endpoint;
 	}
 

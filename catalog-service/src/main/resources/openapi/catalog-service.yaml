@@ -116,6 +116,7 @@ paths:
               $ref: '#/components/schemas/CategoryDto'
       tags:
         - category-controller
+      parameters: []
   '/api/catalog/history/{id}':
     get:
       summary: getCatalogHistory

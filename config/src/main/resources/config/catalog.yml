@@ -10,8 +10,13 @@ spring:
     password: postgres
   flyway:
     baseline-on-migrate: true
+  cloud:
+    discovery:
+      enabled: true
 
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8084/eureka/
+  instance:
+    prefer-ip-address: true

@@ -1,0 +1,199 @@
+openapi: 3.0.0
+x-stoplight:
+  id: g16hswxbggmiw
+info:
+  title: order-service
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /api/address/addNewAddress:
+    parameters: []
+    post:
+      summary: addNewAddress
+      operationId: addNewAddress
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressDto'
+      tags:
+        - address-controller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddressDto'
+      description: ''
+  /api/address/:
+    get:
+      summary: getAllAddress
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddressDto'
+      operationId: getAllAddress
+      tags:
+        - address-controller
+  '/api/address/{id}':
+    parameters:
+      - schema:
+          type: integer
+          format: int64
+        name: id
+        in: path
+        required: true
+    delete:
+      summary: deleteAddress
+      operationId: deleteAddress
+      responses: {}
+      tags:
+        - address-controller
+      description: ''
+  /api/order/:
+    get:
+      summary: getOrders
+      tags:
+        - order-controller
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderDto'
+      operationId: getOrders
+  /api/order/addNewOrder:
+    post:
+      summary: addNewOrder
+      operationId: addNewOrder
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDto'
+      tags:
+        - order-controller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDto'
+    parameters: []
+  '/api/order/find/{id}':
+    parameters:
+      - schema:
+          type: integer
+          format: int64
+        name: id
+        in: path
+        required: true
+    get:
+      summary: findOrder
+      tags:
+        - order-controller
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDto'
+      operationId: findOrder
+      description: ''
+  /api/order/acceptOrder:
+    parameters: []
+    post:
+      summary: acceptOrder
+      operationId: acceptOrder
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDto'
+      parameters:
+        - schema:
+            type: integer
+            format: int64
+          in: query
+          name: id
+          required: true
+        - schema:
+            type: boolean
+          in: query
+          name: accept
+          required: true
+      tags:
+        - order-controller
+components:
+  schemas:
+    AddressDto:
+      title: AddressDto
+      x-stoplight:
+        id: cukxc2hw3e11j
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        zipCode:
+          type: string
+        street:
+          type: string
+        houseNo:
+          type: string
+        cityName:
+          type: string
+    OrderDto:
+      title: OrderDto
+      x-stoplight:
+        id: 98ci8le5pancz
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        price:
+          type: integer
+        items:
+          type: string
+        piece:
+          type: integer
+        orderStatus:
+          $ref: '#/components/schemas/OrderStatuses'
+        address:
+          $ref: '#/components/schemas/AddressDto'
+    OrderStatuses:
+      title: OrderStatuses
+      x-stoplight:
+        id: rzsuwq8ff0lng
+      type: string
+    ItemDto:
+      title: ItemDto
+      x-stoplight:
+        id: uhpglcb3f25na
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        productName:
+          type: string
+        productPrice:
+          type: integer
