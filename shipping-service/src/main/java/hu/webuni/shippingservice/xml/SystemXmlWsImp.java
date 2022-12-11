@@ -14,9 +14,14 @@ public class SystemXmlWsImp implements SystemXmlWs {
 	
 	@Override
 	public String deliveryParcel(String deliveryAddress, String deliveryItems, String pickupAddress) {
+		try { 
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			
+		}
 		Integer processSucceed = rand.nextInt(0, 1);
 
-		if(processSucceed == 1)  {
+		if(processSucceed == 1 || processSucceed == 0)  {
 			String parcelno = "PRC" + rand.nextInt(100000000, 999999999);
 			log.info("Parcel delivered successful. Parcelno: " + parcelno);
 			log.info("Delivery address: " + deliveryAddress);

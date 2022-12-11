@@ -5,6 +5,7 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8084/eureka/
+    hostname: localhost  
 
 spring:
   cloud:
@@ -16,9 +17,27 @@ spring:
         - Path=/catalog/**
         filters:
         - RewritePath=/catalog(?<segment>/?.*), /api/catalog$\{segment}
-      - id: orders
-        uri: lb://order
+      - id: category
+        uri: lb://catalog
+        predicates:
+        - Path=/category/**
+        filters:
+        - RewritePath=/category(?<segment>/?.*), /api/category$\{segment}
+      - id: address
+        uri: lb://order-service
+        predicates:
+        - Path=/address/**
+        filters:
+        - RewritePath=/address(?<segment>/?.*), /api/address$\{segment}
+      - id: order
+        uri: lb://order-service
         predicates:
         - Path=/order/**
         filters:
         - RewritePath=/order(?<segment>/?.*), /api/order$\{segment}
+      - id: user
+        uri: lb://user-service
+        predicates:
+        - Path=/user/**
+        filters:
+        - RewritePath=/user(?<segment>/?.*), /api/user$\{segment}

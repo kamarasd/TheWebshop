@@ -1,7 +1,6 @@
 package hu.webuni.orderservice.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +26,5 @@ public class JmsConfig {
         brokerService.addConnector("tcp://localhost:8089");
         brokerService.setPersistent(false);
         return brokerService;
-
     }
 }

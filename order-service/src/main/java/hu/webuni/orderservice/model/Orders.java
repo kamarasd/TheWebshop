@@ -3,8 +3,8 @@ package hu.webuni.orderservice.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Set;
 
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -21,14 +21,16 @@ public class Orders {
     @EqualsAndHashCode.Include()
     private Long Id;
     private Long userId;
+    private String parcelno;
     private OrderStatuses orderStatus;
     private Integer priceSum;
 
     private Integer piece;
 
-
-    private String items;
-
     @ManyToOne
     private Address address;
+    
+    private LocalDate deliveryDate;
+    
+   
 }

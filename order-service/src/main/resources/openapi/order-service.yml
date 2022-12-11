@@ -171,14 +171,17 @@ components:
           format: int64
         price:
           type: integer
-        items:
-          type: string
         piece:
           type: integer
         orderStatus:
           $ref: '#/components/schemas/OrderStatuses'
         address:
           $ref: '#/components/schemas/AddressDto'
+        parcelno:
+          type: string
+        deliveryDate:
+          type: string
+          format: date
     OrderStatuses:
       title: OrderStatuses
       x-stoplight:

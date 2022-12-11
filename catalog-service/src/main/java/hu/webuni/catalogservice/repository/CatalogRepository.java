@@ -16,7 +16,7 @@ public interface CatalogRepository extends JpaRepository<Catalog, Long>, Queryds
     @Override
     default void customize(QuerydslBindings bindings, QCatalog catalog) {
         bindings.bind(catalog.productName).first((path, value) -> path.likeIgnoreCase(value));
-        bindings.bind(catalog.category.categoryName).first((path, value) -> path.startsWith(value));
+        bindings.bind(catalog.category.categoryName).first((path, value) -> path.startsWithIgnoreCase(value));
 
         bindings.bind(catalog.productPrice).all((path, values) -> {
             if(values.size() != 2) return Optional.empty();
