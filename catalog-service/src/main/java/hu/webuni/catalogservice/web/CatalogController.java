@@ -55,7 +55,6 @@ public class CatalogController implements CatalogControllerApi {
 
     @Override
     public ResponseEntity<CatalogDto> addNewItemToCatalog(CatalogDto catalogDto) {
-        System.out.println(catalogMapper.dtoToCatalog(catalogDto));
         Catalog catalog = catalogRepository.save(catalogMapper.dtoToCatalog(catalogDto));
         return ResponseEntity.ok(catalogMapper.catalogToDto(catalog));
     }

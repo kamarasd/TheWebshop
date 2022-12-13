@@ -13,14 +13,16 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class users {
+@Builder
+public class Users {
 
+	@Id
     @GeneratedValue
-    @Id
     @ToString.Include
     private Long id;
-
+	
     private String email;
     private String username;
     private String password;
+    private String facebookId;
 }

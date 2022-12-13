@@ -6,12 +6,17 @@ import hu.webuni.orderservice.api.model.ItemDto;
 import hu.webuni.orderservice.api.model.OrderDto;
 import hu.webuni.orderservice.dto.ParcelDto;
 import hu.webuni.orderservice.mapper.AddressMapper;
+import hu.webuni.orderservice.mapper.OrderedItemMapper;
 import hu.webuni.orderservice.mapper.OrdersMapper;
 import hu.webuni.orderservice.model.Address;
+import hu.webuni.orderservice.model.Catalog;
 import hu.webuni.orderservice.model.OrderStatuses;
+import hu.webuni.orderservice.model.OrderedItem;
 import hu.webuni.orderservice.model.Orders;
 import hu.webuni.orderservice.repository.AddressRepository;
-import hu.webuni.orderservice.repository.OrderRepository;
+import hu.webuni.orderservice.repository.CatalogRepository;
+import hu.webuni.orderservice.repository.OrderedItemRepository;
+import hu.webuni.orderservice.repository.OrdersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,19 +28,25 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 @RequiredArgsConstructor
 @RestController
 @Slf4j
 public class OrderController implements OrderControllerApi {
 
-    private final OrderRepository orderRepository;  
-
+    private final OrdersRepository ordersRepository;  
     private final OrdersMapper ordersMapper;
     private final OrderService orderService;
-
+    private final OrderedItemMapper orderedItemMapper;
 
     @Override
     public Optional<NativeWebRequest> getRequest() {
@@ -44,43 +55,41 @@ public class OrderController implements OrderControllerApi {
 
     @Override
     public ResponseEntity<OrderDto> acceptOrder(Long id, Boolean accept) {
-        Orders orders = orderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-    	if(orders.getParcelno() == null) {
-	        if (accept.equals(Boolean.TRUE)) {
-	            orders.setOrderStatus(OrderStatuses.CONFIRMED);
-	            orderService.sendParcelToDelivery(orders);
-	        } else if (accept.equals(Boolean.FALSE)) {
-	            orders.setOrderStatus(OrderStatuses.DECLINED);
-	        } else {
-	            new ResponseStatusException(HttpStatus.BAD_REQUEST);
-	        }
-        } else {
-        	throw new ResponseStatusException(HttpStatus.ALREADY_REPORTED, "Already delivered");
-        }
-
-        orderRepository.save(orders);
-        return ResponseEntity.ok(ordersMapper.orderToDto(orders));
+    	return ResponseEntity.ok(ordersMapper.orderToDto(orderService.acceptOrder(id, accept)));
     }
 
     @Override
-    public ResponseEntity<OrderDto> addNewOrder(OrderDto orderDto) {
-        Orders order = ordersMapper.dtoToOrder(orderDto);
-        order.setOrderStatus(OrderStatuses.PENDING);
-        return ResponseEntity.ok(ordersMapper.orderToDto(orderRepository.save(order)));
+    public ResponseEntity<OrderDto> addNewOrder(OrderDto orderDto) {     
+        return ResponseEntity.ok(ordersMapper.orderToDto(orderService.addNewOrder(ordersMapper.dtoToOrder(orderDto))));
     }
 
     @Override
     public ResponseEntity<OrderDto> findOrder(Long id) {
-        Orders orders = orderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Orders orders = ordersRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return ResponseEntity.ok(ordersMapper.orderToDto(orders));
     }
 
     @Override
     public ResponseEntity<List<OrderDto>> getOrders() {
-        List<Orders> order = orderRepository.findAll();
+        List<Orders> order = ordersRepository.findAll();
         return ResponseEntity.ok(ordersMapper.ordersToDto(order));
     }
+
+	@Override
+	public ResponseEntity<OrderDto> addItemToOrder(@NotNull @Valid Long orderId, @NotNull @Valid Long productId,
+			@Valid Integer piece) {
+		orderService.addItemToOrder(orderId, productId, piece);	
+		return ResponseEntity.ok(ordersMapper.orderToDto(orderService.addItemToOrder(orderId, productId, piece)));
+	}
+
+	@Override
+	public ResponseEntity<Void> deleteOrder(Long id) {
+		ordersRepository.deleteById(id);
+		return ResponseEntity.ok().build();
+	}
+
+
+	
 }
 
 

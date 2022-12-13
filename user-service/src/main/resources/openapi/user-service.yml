@@ -1,0 +1,79 @@
+openapi: 3.0.1
+x-stoplight:
+  id: n5fsnl3lmymgh
+info:
+  title: user-service
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8080'
+paths:
+  /api/user/createUser:
+    post:
+      summary: createUser
+      operationId: createUser
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+      tags:
+        - user-controller
+      description: ''
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: username
+        - schema:
+            type: string
+          in: query
+          name: password
+        - schema:
+            type: string
+          in: query
+          name: email
+    parameters: []
+  /api/user/createFbUser:
+    post:
+      summary: createFbUser
+      operationId: createFbUser
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+      tags:
+        - user-controller
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: facebookId
+        - schema:
+            type: string
+          in: query
+          name: password
+    parameters: []
+components:
+  schemas:
+    UserDto:
+      title: UserDto
+      x-stoplight:
+        id: 6ew8jqcqfrc91
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        password:
+          type: string
+        facebookId:
+          type: string
+        email:
+          type: string
