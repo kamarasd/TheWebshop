@@ -186,16 +186,9 @@ paths:
           description: OK
       tags:
         - order-controller
-  '/api/order/findByUser/{id}':
-    parameters:
-      - schema:
-          type: integer
-          format: int64
-        name: id
-        in: path
-        required: true
+  /api/order/findByUsername:
     get:
-      summary: findByUserId
+      summary: findByUsername
       tags:
         - order-controller
       responses:
@@ -204,9 +197,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderDto'
-      operationId: findByUserId
-      description: ''
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderDto'
+      operationId: findByUsername
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: username
+          required: true
 components:
   schemas:
     AddressDto:

@@ -1,13 +1,17 @@
 package hu.webuni.userservice.security;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +20,7 @@ import com.auth0.jwt.JWTCreator.Builder;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import hu.webuni.userservice.config.UserConfigProperties;
+import hu.webuni.userservice.model.LoggedUser;
 import hu.webuni.userservice.model.Users;
 import hu.webuni.userservice.repository.UserRepository;
 
@@ -24,69 +29,51 @@ public class JwtService {
 	
 	@Autowired
 	UserRepository userRepository;
-	
-	@Autowired
-	UserConfigProperties userConfProp;
 
 	private Algorithm alg;
 	private String issuer;
 	private String auth;
 	private Integer logInMinutes;
 	
+	private static final String CUST_USERNAME = "username";
+	private static final String CUST_ROLE = "role";
+	
 	@PostConstruct
 	public void init() {
-		issuer = userConfProp.getUserConf().getIssuer();
+		issuer = "user-service";
 		alg = (Algorithm) Algorithm.HMAC256("Salt");
-		auth = userConfProp.getUserConf().getAuth();
-		logInMinutes = userConfProp.getUserConf().getMinutesLoggedIn();
+		auth = "auth";
+		logInMinutes = 1000;
 	}
-	
-	private static final String SUP_EMP_NAME = "superiored_user_full_name";
-	private static final String SUP_EMP_ID = "superiored_user_id";
-	
-	private static final String EMP_NAME = "user_full_name";
-	private static final String EMP_USER = "username";
-	private static final String EMP_ID = "user_id";
 
-	public String createJwtToken(UserDetails principal) {
-		Builder jwt = JWT.create().withSubject(principal.getUsername())
-		.withArrayClaim(auth, principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toArray(String[]::new));
-		/*
-		Employee employee = ((HrUser) principal).getEmployee();
-		if(employee.getPosition().getPosName().contentEquals("Superior")) {
-			List<Employee> superioredEmployees = employeeRepository.findBySuperior(employee.getName());
-			if(!superioredEmployees.isEmpty()) {
-				jwt.withArrayClaim(SUP_EMP_ID, superioredEmployees.stream().map(Employee::getEmployeeId).toArray(Long[]::new))
-				.withArrayClaim(SUP_EMP_NAME, superioredEmployees.stream().map(Employee::getName).toArray(String[]::new));
-			}
+	public Builder createJwtToken(UserDetails principal) {
+		System.out.println("564654");
+		Builder jwt = JWT.create()
+				.withSubject(principal.getUsername())
+					.withArrayClaim(auth, principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toArray(String[]::new));
+		
+		Users user = ((LoggedUser) principal).getUser();
+		System.out.println(principal.getUsername());
+		if(user.getRole().contentEquals("customer")) {
+			jwt.withClaim(CUST_USERNAME, user.getUsername());
+			jwt.withClaim(CUST_ROLE, user.getRole());
 		}
 		
-		jwt.withClaim(EMP_ID, employee.getEmployeeId());
-		jwt.withClaim(EMP_USER, employee.getUsername());
-		jwt.withClaim(EMP_NAME, employee.getName());*/
-		
-		return jwt.withExpiresAt(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(logInMinutes))).withIssuer(issuer)
-				.sign(alg);
+		jwt.withExpiresAt(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(logInMinutes))).withIssuer(issuer).sign(alg);
+			
+		return jwt;
 		
 	}
 	
 	public UserDetails parseJwt(String jwtToken) {
-		DecodedJWT decodedJwt = JWT.require(alg)
-		.withIssuer(issuer)
-		.build()
-		.verify(jwtToken);
+		DecodedJWT decodedJWT = JWT.require(alg).withIssuer(issuer).build().verify(jwtToken);
 		
-		Users user = new Users();
-		/*employee.setEmployeeId(decodedJwt.getClaim(EMP_ID).asLong());
-		employee.setName(decodedJwt.getClaim(EMP_NAME).asString());
-		employee.setUsername(decodedJwt.getClaim(EMP_USER).asString());*/
-		
-		/*return new HrUser(decodedJwt.getSubject(), "dumdum", 
-				decodedJwt.getClaim(auth)
+		return new User(decodedJWT.getSubject(),
+				"dummy",
+				decodedJWT.getClaim(auth)
 				.asList(String.class)
 				.stream()
 				.map(SimpleGrantedAuthority::new)
-				.collect(Collectors.toList()), employee);*/
-		return null;
+				.collect(Collectors.toList()));
 	}
 }

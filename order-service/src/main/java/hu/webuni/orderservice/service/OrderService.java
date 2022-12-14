@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.persistence.criteria.Order;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,8 @@ import org.springframework.web.server.ResponseStatusException;
 @Slf4j
 public class OrderService {
 
-    private final JmsTemplate jmsTemplate;
+    private static final int Orders = 0;
+	private final JmsTemplate jmsTemplate;
     private final OrdersRepository ordersRepository;
     private final CatalogRepository catalogRepository;
     private final OrderedItemRepository orderedItemRepository;
@@ -66,6 +68,7 @@ public class OrderService {
     	ordersRepository.save(order);
     }
     
+	@Transactional
     public Orders acceptOrder(Long id, Boolean accept) {
     	Orders orders = ordersRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -94,7 +97,6 @@ public class OrderService {
 		List<OrderedItem> alreadyOrderedItems = orders.getOrderedItemList();
 		
 		OrderedItem orderedItem = new OrderedItem();
-		System.out.println(Objects.nonNull(orderedItem));
 		if(!Objects.nonNull(orderedItem)) { 
 			alreadyOrderedItems.forEach(item -> {				
 				orders.setPiecesSum(item.getPiece() + orders.getPiecesSum());
@@ -102,27 +104,37 @@ public class OrderService {
 			});
 		} else {
 			orders.setPiecesSum(orders.getPiecesSum() + piece);
-			System.out.println(orders.getPiecesSum() + piece);
 			orders.setPriceSum(orders.getPriceSum() + (catalog.getProductPrice() * piece));
-			System.out.println(orders.getPriceSum() + (catalog.getProductPrice() * piece));
 		}
 		
 		orderedItem.setPiece(piece);
 		orderedItem.setProductName(catalog.getProductName());
 		orderedItem.setProductPrice(catalog.getProductPrice());
-
+		
 		ordersRepository.save(orders);
 		orders.addOrders(orderedItem);
 		orderedItemRepository.save(orderedItem);
 		
 		return orders;
     }
-    
+	
+	@Transactional
     public Orders addNewOrder(Orders order) { 
     	order.setPiecesSum(0);
         order.setPriceSum(0);
         order.setOrderStatus(OrderStatuses.PENDING);
     	return ordersRepository.save(order);
     }
-
+    
+	@Transactional
+    public void deleteById(Long id) {
+    	Orders order = ordersRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		ordersRepository.deleteOrderedItems(id); 
+		order.setOrderedItemList(null);
+		ordersRepository.deleteById(id);
+    }
+	
+	public List<Orders> findOrderByUsername(String username) {
+		return ordersRepository.findOrdersByUsername(username);
+	}
 }

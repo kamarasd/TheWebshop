@@ -35,6 +35,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -78,18 +79,20 @@ public class OrderController implements OrderControllerApi {
 	@Override
 	public ResponseEntity<OrderDto> addItemToOrder(@NotNull @Valid Long orderId, @NotNull @Valid Long productId,
 			@Valid Integer piece) {
-		orderService.addItemToOrder(orderId, productId, piece);	
 		return ResponseEntity.ok(ordersMapper.orderToDto(orderService.addItemToOrder(orderId, productId, piece)));
 	}
 
 	@Override
 	public ResponseEntity<Void> deleteOrder(Long id) {
-		ordersRepository.deleteById(id);
+		orderService.deleteById(id);
 		return ResponseEntity.ok().build();
 	}
 
-
-	
+	@Override
+	public ResponseEntity<List<OrderDto>> findByUsername(@NotNull String username) {
+		List<Orders> order = orderService.findOrderByUsername(username);
+		return ResponseEntity.ok(ordersMapper.ordersToDto(order));
+	}
 }
 
 

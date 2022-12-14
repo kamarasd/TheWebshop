@@ -7,8 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
@@ -25,4 +25,5 @@ public class Users {
     private String username;
     private String password;
     private String facebookId;
+    private String role;
 }

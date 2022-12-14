@@ -58,6 +58,26 @@ paths:
           in: query
           name: password
     parameters: []
+  /api/user/login:
+    post:
+      summary: userLogin
+      operationId: userLogin
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+      tags:
+        - user-controller
+      description: ''
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
 components:
   schemas:
     UserDto:
@@ -76,4 +96,16 @@ components:
         facebookId:
           type: string
         email:
+          type: string
+        role:
+          type: string
+    LoginDto:
+      title: LoginDto
+      x-stoplight:
+        id: xpo0ifl1dc4uk
+      type: object
+      properties:
+        username:
+          type: string
+        password:
           type: string
