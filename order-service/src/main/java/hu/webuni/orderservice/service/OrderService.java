@@ -8,22 +8,15 @@ import hu.webuni.orderservice.model.Orders;
 import hu.webuni.orderservice.repository.CatalogRepository;
 import hu.webuni.orderservice.repository.OrderedItemRepository;
 import hu.webuni.orderservice.repository.OrdersRepository;
-import hu.webuni.orderservice.wsclient.SystemXmlWs;
-import hu.webuni.orderservice.wsclient.SystemXmlWsImpService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
-import javax.persistence.criteria.Order;
 import javax.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
@@ -92,6 +85,10 @@ public class OrderService {
     	Catalog catalog = catalogRepository.findById(productId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 		Orders orders = ordersRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 		
+		if(orders.getOrderStatus() == OrderStatuses.DELIVERED && orders.getParcelno() != null) {
+			throw new ResponseStatusException(HttpStatus.ALREADY_REPORTED, "Already delivered");
+		}
+		
 		piece = piece != null ? piece : 1;
 		
 		List<OrderedItem> alreadyOrderedItems = orders.getOrderedItemList();
@@ -110,11 +107,10 @@ public class OrderService {
 		orderedItem.setPiece(piece);
 		orderedItem.setProductName(catalog.getProductName());
 		orderedItem.setProductPrice(catalog.getProductPrice());
-		
+
 		ordersRepository.save(orders);
 		orders.addOrders(orderedItem);
 		orderedItemRepository.save(orderedItem);
-		
 		return orders;
     }
 	
